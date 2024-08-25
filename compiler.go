@@ -152,6 +152,38 @@ func GenerateToken(src []byte) (TokenInfo, int) {
 		}
 	}
 
+	if curToken.tokType != TT_ILLEGAL {
+		return curToken, bytesConsumed
+	}
+
+	isDigit := func(c byte) bool {
+		// is c between 0 and 9
+		return c >= 0x30 && c <= 0x39
+	}
+
+	isAlphabet := func(c byte) bool {
+		// is c A-Z? is c a-z? is c '_'?
+		return (c >= 0x41 && c <= 0x5a) || (c >= 0x61 && c <= 0x7a) || (c == 0x5f)
+	}
+
+	var i int = 0
+
+	if isAlphabet(srcStr[i]) {
+		curToken.tokType = TT_IDENT
+		for (i < len(srcStr)) && (isAlphabet(srcStr[i]) || isDigit(src[i])) {
+			i++
+		}
+		curToken.tokStr = srcStr[:i]
+		bytesConsumed = len(srcStr[:i])
+	} else if isDigit(srcStr[i]) {
+		curToken.tokType = TT_INT
+		for (i < len(srcStr)) && (isAlphabet(srcStr[i]) || isDigit(src[i])) {
+			i++
+		}
+		curToken.tokStr = srcStr[:i]
+		bytesConsumed = len(srcStr[:i])
+	}
+
 	return curToken, bytesConsumed
 }
 
