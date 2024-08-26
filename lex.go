@@ -53,6 +53,7 @@ func lexSyntaxToken(source []rune, cursor int) (int, *token) {
 // "lexIntegerToken("foo 12 3", 4) => "12"
 // "lexIntegerToken("foo 12a 3", 4) <- ignore (keeping it simple)
 func lexIntegerToken(source []rune, cursor int) (int, *token) {
+	// position of the first integer
 	originalCursor := cursor
 
 	var value []rune
@@ -80,6 +81,7 @@ func lexIntegerToken(source []rune, cursor int) (int, *token) {
 // lexIdentifierToken("123 ab +", 4) => "ab"
 // lexIdentifierToken("123 ab123 +", 4) => "ab123"
 func lexIdentifierToken(source []rune, cursor int) (int, *token) {
+	// position of the first identifier
 	originalCursor := cursor
 	
 	var value []rune
@@ -117,6 +119,9 @@ func lex(source []rune) []token {
 	for cursor < len(source) {
 		// eat whitespace
 		cursor = eatWhitespace(source, cursor)
+		if cursor == len(source) {
+			break
+		}
 
 		// check for syntaxToken: if so, 'continue'
 		cursor, t = lexSyntaxToken(source, cursor)
