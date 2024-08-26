@@ -1,2 +1,2 @@
-# go_compiler
-Learning Go by creating a compiler
+# go_interpreter
+Learning Go by creating an interpreter
