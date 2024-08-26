@@ -14,5 +14,16 @@ func main() {
 	}
 
 	tokens := lex([]rune(string(program)))
-	fmt.Println(tokens)
+	// for _, token := range tokens {
+	// 	fmt.Println(token.value)
+	// }
+
+	// parsing next -> taking flat structure and turning into tree
+	// ( + 13 (- 12 1) )
+	//     +
+	//  13    -
+	// 		12  1
+
+	ast, _ := parse(tokens, 0)
+	fmt.Print(ast.pretty())
 }
