@@ -14,16 +14,42 @@ func main() {
 	}
 
 	tokens := lex([]rune(string(program)))
-	// for _, token := range tokens {
-	// 	fmt.Println(token.value)
-	// }
+	debug := false
+	if debug {
+		for _, token := range tokens {
+			fmt.Println(token.value)
+		}
+	}
 
 	// parsing next -> taking flat structure and turning into tree
 	// ( + 13 (- 12 1) )
 	//     +
 	//  13    -
 	// 		12  1
+	var parseIndex int
+	var a = ast {
+		value {
+			kind: literalValue,
+			literal: &token {
+				value: "begin",
+				kind: identifierToken,
+			},
+		},
+	}
+	for parseIndex < len(tokens) {
+		childAst, nextIndex := parse(tokens, parseIndex)
+		a = append(a, value {
+				kind: listValue,
+				list: &childAst,
+			},
+		)
+		parseIndex = nextIndex
+	}
 
-	ast, _ := parse(tokens, 0)
-	fmt.Print(ast.pretty())
+	fmt.Println(a.pretty())
+
+	initializeBuiltins()
+	ctx := map[string]any{}
+	value := astWalk(a, ctx)
+	fmt.Println("Result:", value)
 }
