@@ -88,7 +88,7 @@ func lexIdentifierToken(source []rune, cursor int) (int, *token) {
 
 	for cursor < len(source) {
 		r := source[cursor]
-		if !unicode.IsSpace(r){
+		if !(unicode.IsSpace(r) || r == ')') {
 			value = append(value, r)
 			cursor++
 			continue
