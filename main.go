@@ -7,13 +7,9 @@ import (
 
 func main() {
 	// accept input
-	program, err := os.ReadFile(os.Args[1])
-	
-	if err != nil {
-		panic(err)
-	}
+	lc := newLexingContext(os.Args[1])
 
-	tokens := lex([]rune(string(program)))
+	tokens := lc.lex()
 	debug := false
 	if debug {
 		for _, token := range tokens {
@@ -44,6 +40,10 @@ func main() {
 			},
 		)
 		parseIndex = nextIndex
+	}
+
+	if parseIndex < len(tokens) {
+		panic("Incomplete parse")
 	}
 
 	fmt.Println(a.pretty())

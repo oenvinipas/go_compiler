@@ -1,5 +1,7 @@
 package main
 
+import "os"
+
 type valueKind uint
 
 const (
@@ -36,37 +38,38 @@ func (a ast) pretty() string {
 /*
 for example: "(+ 13 (- 12 1)"
 parse(["(", "+", "13", "(", "-", "12", "1", ")", ")"]):
-should produce: ast{
-	value{
-		kind: literal,
-	    literal: "+",
-	},
-	value{
-	    kind: literal,
-	    literal: "13",
-	},
-	value{
-	    kind: list,
-	    list: ast {
-	    	value {
-	        kind: literal,
-	        literal: "-",
-	    },
-	    value {
-	        kind: literal,
-	        literal: "12",
-	    },
-	    value {
-	        kind: literal,
-	        literal: "1",
-	    },
+
+	should produce: ast{
+		value{
+			kind: literal,
+		    literal: "+",
+		},
+		value{
+		    kind: literal,
+		    literal: "13",
+		},
+		value{
+		    kind: list,
+		    list: ast {
+		    	value {
+		        kind: literal,
+		        literal: "-",
+		    },
+		    value {
+		        kind: literal,
+		        literal: "12",
+		    },
+		    value {
+		        kind: literal,
+		        literal: "1",
+		    },
+			}
 		}
 	}
-}
 */
 func parse(tokens []token, index int) (ast, int) {
 	var a ast
-	
+
 	token := tokens[index]
 	if !(token.kind == syntaxToken && token.value == "(") {
 		panic("should be an open parenthesis")
@@ -78,7 +81,7 @@ func parse(tokens []token, index int) (ast, int) {
 		if token.kind == syntaxToken && token.value == "(" {
 			// error handling maybe?
 			child, nextIndex := parse(tokens, index)
-			a = append(a, value {
+			a = append(a, value{
 				kind: listValue,
 				list: &child,
 			})
@@ -90,12 +93,17 @@ func parse(tokens []token, index int) (ast, int) {
 			return a, index + 1
 		}
 
-		a = append(a, value {
-			kind: literalValue,
+		a = append(a, value{
+			kind:    literalValue,
 			literal: &token,
 		})
 
 		index++
+	}
+
+	if tokens[index-1].kind == syntaxToken && tokens[index-1].value != ")" {
+		tokens[index-1].debug("Expected closing parenthesis")
+		os.Exit(1)
 	}
 
 	return a, index

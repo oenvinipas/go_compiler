@@ -175,7 +175,11 @@ func Test_parse(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		tokens := lex([]rune(test.input))
+		lc := lexingContext {
+			source: []rune(test.input),
+			sourceFileName: "<memory>",
+		}
+		tokens := lc.lex()
 		ast, _ := parse(tokens, 0)
 		assert.Equal(t, test.prettyOutput, ast.pretty())
 		assert.True(t, compareAst(test.output, ast))

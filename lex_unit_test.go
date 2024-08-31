@@ -36,7 +36,11 @@ func Test_lexIntegerToken(t *testing.T) {
 	}
 	
 	for _, test := range tests {
-		cursor, token := lexIntegerToken([]rune(test.source), test.cursor)
+		lc := lexingContext {
+			source: []rune(test.source),
+			sourceFileName: "<memory>",
+		}
+		cursor, token := lc.lexIntegerToken(test.cursor)
 		assert.Equal(t, cursor, test.expectedCursor)
 		assert.Equal(t, token.value, test.expectedValue)
 		assert.Equal(t, token.kind, integerToken)
@@ -67,7 +71,12 @@ func Test_lexIdentifierToken(t *testing.T) {
 	}
 	
 	for _, test := range tests {
-		cursor, token := lexIdentifierToken([]rune(test.source), test.cursor)
+		lc := lexingContext {
+			source: []rune(test.source),
+			sourceFileName: "<memory>",
+		}
+
+		cursor, token := lc.lexIdentifierToken(test.cursor)
 		assert.Equal(t, cursor, test.expectedCursor)
 		assert.Equal(t, token.value, test.expectedValue)
 		assert.Equal(t, token.kind, identifierToken)
@@ -113,7 +122,14 @@ func Test_lex(t *testing.T) {
 
 	}
 	for _, test := range tests {
-		tokens := lex([]rune(test.source))
-		assert.Equal(t, tokens, test.tokens)
+		lc := lexingContext {
+			source: []rune(test.source),
+			sourceFileName: "<memory>",
+		}
+		tokens := lc.lex()
+		for i, token := range tokens {
+			token.lc = test.tokens[i].lc
+			assert.Equal(t, token, test.tokens[i])
+		}
 	}
 }
