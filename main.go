@@ -46,8 +46,6 @@ func main() {
 		panic("Incomplete parse")
 	}
 
-	fmt.Println(a.pretty())
-
 	initializeBuiltins()
 	ctx := map[string]any{}
 	value := astWalk(a, ctx)
