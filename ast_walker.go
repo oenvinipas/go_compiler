@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 )
 
@@ -27,6 +28,12 @@ func initializeBuiltins() {
 		}
 
 		return astWalk2(_else, ctx)
+	}
+	builtins["<"] = func(args []value, ctx map[string]any) any {
+		return astWalk2(args[0], ctx).(int64) < astWalk2(args[1], ctx).(int64)
+	}
+	builtins[">"] = func(args []value, ctx map[string]any) any {
+		return astWalk2(args[0], ctx).(int64) > astWalk2(args[1], ctx).(int64)
 	}
 	builtins["+"] = func(args []value, ctx map[string]any) any {
 		var i int64
@@ -102,8 +109,14 @@ func astWalk(ast []value, ctx map[string]any) any {
 	}
 
 	
+	// Calling a function that is not builtin
+	maybeFunction, ok := ctx[functionName]
+	if !ok {
+		(*ast[0].literal).debug(fmt.Sprintf("Expected function, got %s", functionName))
+		os.Exit(1)
+	}
 
-	userDefinedFunction := ctx[functionName].(func([]any, map[string]any) any)
+	userDefinedFunction := maybeFunction.(func([]any, map[string]any) any)
 	var args []any
 	for _, unevaluatedArg := range ast[1:] {
 		args = append(args, astWalk2(unevaluatedArg, ctx))
